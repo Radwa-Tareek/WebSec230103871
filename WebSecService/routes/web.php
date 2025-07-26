@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::get('/', function () {
+    return view('welcome');
+});
+
 Route::get('/minitest', function () {
     $bill = [
         ['item' => 'Apples', 'qty' => 3, 'price' => 5],
@@ -10,10 +14,11 @@ Route::get('/minitest', function () {
     ];
     return view('minitest', compact('bill'));
 });
+
 Route::get('/transcript', function () {
     $student = [
         'name' => 'Radwa Tarek',
-        'faculty' => 'Computer Science',
+        'faculty' => 'Cyber Security',
         'id' => '230103871',
         'courses' => [
             ['name' => 'Web Security', 'grade' => 95],
@@ -22,13 +27,35 @@ Route::get('/transcript', function () {
             ['name' => 'Data Structures', 'grade' => 91],
         ],
     ];
-
-    // نحسب الـ GPA بناءً على الدرجات
-    $gpa = 0;
-    foreach ($student['courses'] as $course) {
-        $gpa += $course['grade'];
-    }
-    $gpa = $gpa / count($student['courses']);
-
+    $gpa = array_sum(array_column($student['courses'], 'grade')) / count($student['courses']);
     return view('transcript', compact('student', 'gpa'));
+});
+
+Route::get('/numbers', function () {
+    $numbers = range(1, 20);
+    return view('numbers', compact('numbers'));
+});
+
+Route::get('/form', function () {
+    return view('form');
+});
+
+Route::post('/form/submit', function (\Illuminate\Http\Request $request) {
+    $data = $request->all();
+    return view('form_result', compact('data'));
+});
+
+Route::get('/login', function () {
+    return view('login');
+});
+
+Route::post('/login', function (\Illuminate\Http\Request $request) {
+    $email = $request->input('email');
+    $password = $request->input('password');
+
+    if ($email === 'radwa@gmail.com' && $password === '1234') {
+        return redirect('/transcript');
+    } else {
+        return back()->withErrors(['Invalid credentials']);
+    }
 });
